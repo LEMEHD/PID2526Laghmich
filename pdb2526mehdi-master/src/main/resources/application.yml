@@ -1,0 +1,78 @@
+spring:
+  application:
+    name: projetWebPid2526
+  main:
+    banner-mode: off
+  messages:
+    basename:
+    - messages
+    encoding: UTF-8
+  profiles:
+    active:
+     - dev
+---
+spring:
+  config:
+    activate:
+      on-profile:
+      - testU
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+  sql:
+    init:
+      mode: never   
+      encoding: UTF-8
+---
+spring:
+  config:
+    activate:
+      on-profile:
+      - dev
+  datasource:
+    url: jdbc:h2:~/PID_DB/pidDB2526
+    username: sa
+    password: 
+  sql:
+    init:
+      mode: always
+      encoding: UTF-8
+      platform: h2
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.H2Dialect
+    defer-datasource-initialization: true
+  h2:
+    console:
+      enabled: true
+      path: /h2
+logging:
+  level:
+    '[org.isfce.pid.controller]': debug
+    '[org.hibernate.SQL]': debug
+    '[org.hibernate.type.descriptor.sql.BasicBinder]': trace
+management:
+  endpoints:
+    web:
+      base-path: /actuator #défaut /actuator
+      exposure:
+        include:
+        - health
+        - mappings
+        - info
+        - env
+  info:
+    java:
+      enabled: true
+    os:
+      enabled: true
+    process:
+      enabled: true
+    env:
+      enabled: true
+info:
+  app:
+    name: projetWebPid2526
+    version: 0.0.1
+    description: gestion des dispenses
