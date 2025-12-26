@@ -1,0 +1,74 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.2.5'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'org.isfce.pid'
+version = 'v0.1'
+description = 'Base du projet PID2526'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+//Pour MapStruct
+def mapstructVersion = "1.5.5.Final"
+def mapstructBindingVersion = "0.2.0"
+def generatedSources = layout.buildDirectory.dir("generated/sources/annotationProcessor/java/main")
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
+	//Lombok
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	//MapStruct pour le mapping des dto
+    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+    //Lombok + MapStruct binding 
+    annotationProcessor "org.projectlombok:lombok-mapstruct-binding:${mapstructBindingVersion}"
+    
+    
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	runtimeOnly 'com.h2database:h2'
+	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+	
+	//Tests avec Lombok et MapStruct
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+    testAnnotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+    testAnnotationProcessor "org.projectlombok:lombok-mapstruct-binding:${mapstructBindingVersion}"
+    
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+// Configuration pour que STS/Eclipse/IntelliJ détecte le code généré par MapStruct
+sourceSets {
+    main {
+        java.srcDir(generatedSources)
+    }
+}
+tasks.withType(JavaCompile).configureEach {
+    options.generatedSourceOutputDirectory.set(generatedSources)
+    options.compilerArgs.add("-parameters")
+}
+
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
